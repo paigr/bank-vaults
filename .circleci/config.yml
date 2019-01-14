@@ -126,4 +126,4 @@ jobs:
             kubectl wait --for=condition=available deployment/vault-operator
             kubectl apply -f operator/deploy/cr.yaml
             sleep 5
-            kubectl wait --for=condition=ready pod/vault-0
+            kubectl wait --for=condition=ready pod/vault-0 --timeout=60s
