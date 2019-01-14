@@ -121,11 +121,24 @@ jobs:
       - run:
           name: Operator acceptance test
           command: |
+            kubectl apply -f operator/deploy/etcd-rbac.yaml
+            kubectl apply -f operator/deploy/etcd-operator.yaml
+            kubectl wait --for=condition=available deployment/etcd-operator --timeout=120s
+
             kubectl apply -f operator/deploy/rbac.yaml
             kubectl apply -f operator/deploy/operator.yaml
-            kubectl describe deployment vault-operator
             kubectl wait --for=condition=available deployment/vault-operator --timeout=120s
+
             kubectl apply -f operator/deploy/cr.yaml
             sleep 5
             kubectl wait --for=condition=ready pod/vault-0 --timeout=120s
             kubectl describe pod vault-0
+            kubectl delete vaults.vault.banzaicloud.com vault
+
+            kubectl apply -f operator/deploy/cr-etcd-ha.yaml
+            sleep 5
+            kubectl wait --for=condition=ready pod/vault-0 --timeout=120s &
+            kubectl wait --for=condition=ready pod/vault-1 --timeout=120s &
+            wait
+            kubectl describe pod vault-0 vault-1
+            exit 0
