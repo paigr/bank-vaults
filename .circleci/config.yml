@@ -123,7 +123,9 @@ jobs:
           command: |
             kubectl apply -f operator/deploy/rbac.yaml
             kubectl apply -f operator/deploy/operator.yaml
-            kubectl wait --for=condition=available deployment/vault-operator --timeout=60s
+            sleep 60
+            kubectl describe deployment vault-operator
+            # kubectl wait --for=condition=available deployment/vault-operator --timeout=60s
             kubectl apply -f operator/deploy/cr.yaml
             sleep 60
             # kubectl wait --for=condition=ready pod/vault-0 --timeout=60s
